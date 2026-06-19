@@ -25,7 +25,7 @@ ATIVOS = {
 
 DATA_INICIO = "2021-07-01"
 DATA_FIM    = "2026-06-30"
-INTERVALO   = "1wk"
+INTERVALO   = "1mo"
 
 BASE_DIR   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUTPUT_CSV = os.path.join(BASE_DIR, "data", "dados_mercado.csv")
@@ -82,6 +82,8 @@ def main():
     for nome, ticker in ATIVOS.items():
         print(f"Baixando dados de {ticker} ({nome})...")
         preco   = baixar_serie(ticker, DATA_INICIO, DATA_FIM, INTERVALO)
+        print(preco.index)
+        print(preco.to_frame().tail(60))
         preco   = normalizar_index(preco)
         retorno = calcular_retorno(preco)
         series_retorno[f"retorno_{nome}"] = retorno
@@ -90,6 +92,11 @@ def main():
     print("\nConsolidando séries...")
 
     df = pd.DataFrame(series_retorno)
+    print("\nValores ausentes por coluna:")
+    print(df.isna().sum())
+
+    print("\nLinhas com Brent nulo:")
+    print(df[df["retorno_brent"].isna()])
 
     # Remove a primeira linha (sempre NaN por conta do shift)
     df = df.dropna(how="all")
