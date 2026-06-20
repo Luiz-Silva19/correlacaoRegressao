@@ -45,14 +45,15 @@ correlacaoRegressaoPetr4/
 ├── python/
 │   └── 01_coleta_dados.py      # Coleta e exportação via yfinance
 ├── R/
+│   ├── 01_setup.R              # Pacotes, seed, diretórios e funções utilitárias
 │   ├── 02_sanitizacao.R        # Limpeza e estatísticas descritivas
 │   ├── 03_correlacao.R         # Análise de correlação
-│   └── 04_regressao.R          # Regressão linear múltipla
+│   └── 04_regressao.R          # Regressão linear múltipla + diagnósticos
 ├── output/
-│   ├── tabelas/                # CSVs com resultados
-│   ├── graficos/               # PNGs dos gráficos
-│   └── relatorios/
+│   ├── tabelas/                # CSVs com resultados e interpretações
+│   └── graficos/               # PNGs dos gráficos
 ├── correlacaoRegressaoPetr4.Rproj  # Projeto RStudio
+├── README.md                   # Guia rápido de execução
 ├── resume.md                   # Especificação do projeto
 └── DOCUMENTACAO.md             # Este arquivo
 ```
@@ -72,7 +73,7 @@ pip install yfinance pandas numpy
 **R (≥ 4.2) — instalar pacotes uma única vez no console do RStudio:**
 
 ```r
-install.packages(c("tidyverse", "ggplot2", "psych", "car", "lmtest", "nortest"))
+install.packages(c("tidyverse", "ggplot2", "car", "lmtest", "nortest"))
 ```
 
 ---

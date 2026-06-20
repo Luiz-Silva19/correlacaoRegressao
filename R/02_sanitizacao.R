@@ -5,17 +5,14 @@
 # dados, gera estatísticas descritivas e salva o dataset tratado.
 # =============================================================================
 
-library(tidyverse)
+source("R/01_setup.R")
 
 # ---------------------------------------------------------------------------
-# Caminhos  (usar com o projeto .Rproj aberto no RStudio)
+# Caminhos
 # ---------------------------------------------------------------------------
 
-BASE_DIR   <- getwd()   # raiz do projeto, definida automaticamente pelo .Rproj
-INPUT_CSV  <- file.path(BASE_DIR, "data", "dados_mercado.csv")
-OUTPUT_CSV <- file.path(BASE_DIR, "data", "dados_tratados.csv")
-TAB_DIR    <- file.path(BASE_DIR, "output", "tabelas")
-dir.create(TAB_DIR, recursive = TRUE, showWarnings = FALSE)
+INPUT_CSV  <- file.path(DATA_DIR, "dados_mercado.csv")
+OUTPUT_CSV <- file.path(DATA_DIR, "dados_tratados.csv")
 
 cat("=== Sanitização dos Dados ===\n\n")
 
@@ -117,10 +114,7 @@ descritivas <- df_tratado %>%
 print(descritivas)
 
 # Salva tabela de estatísticas descritivas
-write.csv(descritivas,
-          file = file.path(TAB_DIR, "estatisticas_descritivas.csv"),
-          row.names = FALSE)
-cat("\nTabela salva em:", file.path(TAB_DIR, "estatisticas_descritivas.csv"), "\n")
+salvar_tabela(descritivas, "estatisticas_descritivas.csv")
 
 # ---------------------------------------------------------------------------
 # 7. Salvar dataset tratado
