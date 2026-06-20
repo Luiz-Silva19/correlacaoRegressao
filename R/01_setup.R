@@ -67,9 +67,7 @@ salvar_grafico <- function(plot, filename, width = 8, height = 6, dpi = 150) {
 #' Retorna o caminho completo para ser usado no bloco png().
 #'
 #' @param filename Nome do arquivo (ex.: "qqplot_residuos.png").
-#' @param width    Largura em pixels (padrão 800).
-#' @param height   Altura em pixels (padrão 600).
-caminho_grafico_base <- function(filename, width = 800, height = 600) {
+caminho_grafico_base <- function(filename) {
   file.path(GRAF_DIR, filename)
 }
 
