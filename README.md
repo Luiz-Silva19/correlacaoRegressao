@@ -113,11 +113,11 @@ Gera:
 |-----|---------|----------|---------|
 | PETR4 × IBOV  | alto positivo | alto positivo | < 0,05 |
 | PETR4 × BRENT | moderado/alto positivo | moderado/alto positivo | < 0,05 |
-| PETR4 × DOLAR | negativo | negativo | < 0,05 |
+| PETR4 × DOLAR | fraco negativo | fraco negativo | > 0,05 |
 
 - O **IBOV** apresenta a correlação mais forte com PETR4, indicando que o índice de mercado amplo é o principal co-movimento da ação.
 - O **Brent** mostra correlação positiva significativa — coerente com PETR4 ser uma empresa de petróleo.
-- O **Dólar** apresenta correlação negativa, refletindo o efeito inverso da apreciação cambial sobre ativos denominados em reais.
+- O **Dólar** apresenta correlação fraca e não significativa na análise bivariada, sem evidência estatística robusta de relação linear isolada com PETR4.
 - Os QQ-plots e o teste de Shapiro-Wilk revelaram **assimetria positiva** em algumas variáveis, justificando o uso complementar do **coeficiente de Spearman**.
 
 ### Regressão
@@ -126,7 +126,7 @@ O modelo `retorno_petr4 ~ retorno_ibov + retorno_brent + retorno_dolar` explica 
 
 - **IBOV** é o preditor mais significativo (β₁ positivo, p < 0,05).
 - **Brent** apresenta coeficiente positivo com significância variável conforme período amostral.
-- **Dólar** apresenta coeficiente negativo, alinhado com a correlação observada.
+- **Dólar** pode aparecer com efeito positivo condicional no modelo múltiplo, mesmo sem correlação bivariada significativa, por ser avaliado em conjunto com IBOV e Brent.
 - O diagnóstico de resíduos (Shapiro-Wilk + Breusch-Pagan + VIF) está detalhado em `output/tabelas/diagnostico_interpretacao.md`.
 
 ---
