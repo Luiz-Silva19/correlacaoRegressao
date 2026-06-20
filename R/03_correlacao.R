@@ -5,21 +5,13 @@
 # Implementa Pearson de 3 formas, inferência, IC de Fisher e Spearman.
 # =============================================================================
 
-#library(tidyverse)
-library(ggplot2)
-#(nortest)   # ad.test
-#library(psych)     # describe
+source("R/01_setup.R")
 
 # ---------------------------------------------------------------------------
-# Caminhos  (usar com o projeto .Rproj aberto no RStudio)
+# Caminhos
 # ---------------------------------------------------------------------------
 
-BASE_DIR  <- getwd()   # raiz do projeto, definida automaticamente pelo .Rproj
-INPUT_CSV <- file.path(BASE_DIR, "data", "dados_tratados.csv")
-TAB_DIR   <- file.path(BASE_DIR, "output", "tabelas")
-GRAF_DIR  <- file.path(BASE_DIR, "output", "graficos")
-dir.create(TAB_DIR,  recursive = TRUE, showWarnings = FALSE)
-dir.create(GRAF_DIR, recursive = TRUE, showWarnings = FALSE)
+INPUT_CSV <- file.path(DATA_DIR, "dados_tratados.csv")
 
 cat("=== Análise de Correlação ===\n\n")
 
@@ -61,11 +53,11 @@ shapiro_res <- lapply(names(vars_lista), function(nome) {
 })
 shapiro_tab <- do.call(rbind, shapiro_res)
 print(shapiro_tab)
-write.csv(shapiro_tab, file.path(TAB_DIR, "shapiro_wilk.csv"), row.names = FALSE)
+salvar_tabela(shapiro_tab, "shapiro_wilk.csv")
 
 # 1.2 QQ Plots
 for (nome in names(vars_lista)) {
-  arquivo <- file.path(GRAF_DIR, paste0("qqplot_", nome, ".png"))
+  arquivo <- caminho_grafico_base(paste0("qqplot_", nome, ".png"))
   png(arquivo, width = 800, height = 600)
   qqnorm(vars_lista[[nome]], main = paste("QQ Plot —", nome),
          col = "steelblue", pch = 16)
@@ -219,10 +211,7 @@ tabela_corr <- data.frame(
 
 print(tabela_corr)
 
-write.csv(tabela_corr,
-          file = file.path(TAB_DIR, "tabela_correlacoes.csv"),
-          row.names = FALSE)
-cat("\nTabela salva em:", file.path(TAB_DIR, "tabela_correlacoes.csv"), "\n")
+salvar_tabela(tabela_corr, "tabela_correlacoes.csv")
 
 # ---------------------------------------------------------------------------
 # 6. Gráfico de Dispersão (PETR4 × cada variável)
@@ -246,9 +235,7 @@ for (p in pares) {
          y        = "Retorno PETR4 (%)") +
     theme_minimal(base_size = 13)
 
-  arquivo <- file.path(GRAF_DIR, paste0("dispersao_petr4_", p$nome, ".png"))
-  ggsave(arquivo, plot = graf, width = 8, height = 6, dpi = 150)
-  cat("Gráfico salvo:", arquivo, "\n")
+  salvar_grafico(graf, paste0("dispersao_petr4_", p$nome, ".png"))
 }
 
 cat("\n=== Análise de Correlação concluída ===\n")

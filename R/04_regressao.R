@@ -5,22 +5,13 @@
 # Implementa MQO manual, inferência, ANOVA e diagnóstico completo de resíduos.
 # =============================================================================
 
-library(tidyverse)
-library(ggplot2)
-library(car)      # vif, Anova
-library(lmtest)   # bptest (Breusch-Pagan)
-library(nortest)  # ad.test
+source("R/01_setup.R")
 
 # ---------------------------------------------------------------------------
-# Caminhos  (usar com o projeto .Rproj aberto no RStudio)
+# Caminhos
 # ---------------------------------------------------------------------------
 
-BASE_DIR  <- getwd()   # raiz do projeto, definida automaticamente pelo .Rproj
-INPUT_CSV <- file.path(BASE_DIR, "data", "dados_tratados.csv")
-TAB_DIR   <- file.path(BASE_DIR, "output", "tabelas")
-GRAF_DIR  <- file.path(BASE_DIR, "output", "graficos")
-dir.create(TAB_DIR,  recursive = TRUE, showWarnings = FALSE)
-dir.create(GRAF_DIR, recursive = TRUE, showWarnings = FALSE)
+INPUT_CSV <- file.path(DATA_DIR, "dados_tratados.csv")
 
 cat("=== Regressão Linear Múltipla ===\n\n")
 
@@ -101,8 +92,7 @@ tabela_coef <- data.frame(
 )
 
 print(tabela_coef)
-write.csv(tabela_coef, file.path(TAB_DIR, "coeficientes_regressao.csv"), row.names = FALSE)
-cat("Tabela salva em:", file.path(TAB_DIR, "coeficientes_regressao.csv"), "\n")
+salvar_tabela(tabela_coef, "coeficientes_regressao.csv")
 
 cat("\nInterpretação econômica:\n")
 b <- round(beta_hat[, 1], 4)
@@ -191,12 +181,10 @@ g_hist <- ggplot(df_diag, aes(x = residuos)) +
        x = "Resíduos", y = "Densidade") +
   theme_minimal(base_size = 13)
 
-arq_hist <- file.path(GRAF_DIR, "hist_residuos.png")
-ggsave(arq_hist, plot = g_hist, width = 8, height = 6, dpi = 150)
-cat("Histograma salvo:", arq_hist, "\n")
+salvar_grafico(g_hist, "hist_residuos.png")
 
 # 6.2 QQ Plot dos resíduos
-arq_qq <- file.path(GRAF_DIR, "qqplot_residuos.png")
+arq_qq <- caminho_grafico_base("qqplot_residuos.png")
 png(arq_qq, width = 800, height = 600)
 qqnorm(residuos, main = "QQ Plot dos Resíduos", col = "steelblue", pch = 16)
 qqline(residuos, col = "red", lwd = 2)
@@ -213,9 +201,7 @@ g_rv <- ggplot(df_diag, aes(x = ajustados, y = residuos)) +
        x = "Valores Ajustados (%)", y = "Resíduos (%)") +
   theme_minimal(base_size = 13)
 
-arq_rv <- file.path(GRAF_DIR, "residuos_vs_ajustados.png")
-ggsave(arq_rv, plot = g_rv, width = 8, height = 6, dpi = 150)
-cat("Resíduos vs Ajustados salvo:", arq_rv, "\n")
+salvar_grafico(g_rv, "residuos_vs_ajustados.png")
 
 # 6.4 Testes formais dos resíduos
 cat("\nTeste de Shapiro-Wilk nos resíduos:\n")
@@ -242,8 +228,44 @@ tabela_diag <- data.frame(
   pressuposto_ok   = c(sw_res$p.value > 0.05,  bp$p.value > 0.05)
 )
 
-write.csv(tabela_diag, file.path(TAB_DIR, "diagnostico_residuos.csv"), row.names = FALSE)
-cat("Diagnóstico salvo em:", file.path(TAB_DIR, "diagnostico_residuos.csv"), "\n")
+salvar_tabela(tabela_diag, "diagnostico_residuos.csv")
+
+# ---------------------------------------------------------------------------
+# 6.5 Interpretação textual dos diagnósticos
+# ---------------------------------------------------------------------------
+
+norm_ok  <- sw_res$p.value > 0.05
+homo_ok  <- bp$p.value > 0.05
+vif_max  <- max(vif_vals)
+multi_ok <- vif_max < 10
+
+linhas_diag <- c(
+  "# Interpretação dos Diagnósticos do Modelo de Regressão",
+  "",
+  paste("Gerado em:", format(Sys.time(), "%Y-%m-%d %H:%M:%S")),
+  "",
+  "## Normalidade dos Resíduos (Shapiro-Wilk)",
+  sprintf("  W = %.4f  |  p-value = %.4f", sw_res$statistic, sw_res$p.value),
+  ifelse(norm_ok,
+    "  Conclusão: Não há evidência suficiente para rejeitar a normalidade dos resíduos (p > 0,05).",
+    "  Conclusão: A hipótese de normalidade dos resíduos é rejeitada (p < 0,05). Interpretar inferências com cautela."),
+  "",
+  "## Homocedasticidade (Breusch-Pagan)",
+  sprintf("  BP = %.4f  |  p-value = %.4f", bp$statistic, bp$p.value),
+  ifelse(homo_ok,
+    "  Conclusão: Não há evidência de heterocedasticidade (p > 0,05). Variância dos resíduos é homogênea.",
+    "  Conclusão: Heterocedasticidade detectada (p < 0,05). Considerar erros padrão robustos ou transformação da variável resposta."),
+  "",
+  "## Multicolinearidade (VIF)",
+  sprintf("  VIF máximo = %.2f", vif_max),
+  ifelse(multi_ok,
+    "  Conclusão: Sem multicolinearidade severa (VIF < 10). Coeficientes são interpretáveis individualmente.",
+    "  Conclusão: Multicolinearidade elevada detectada (VIF >= 10). Avaliar remoção ou combinação de preditores.")
+)
+
+caminho_diag_txt <- file.path(TAB_DIR, "diagnostico_interpretacao.md")
+writeLines(linhas_diag, caminho_diag_txt)
+cat("Interpretação dos diagnósticos salva em:", caminho_diag_txt, "\n")
 
 # ---------------------------------------------------------------------------
 # 7. Resumo geral do modelo
