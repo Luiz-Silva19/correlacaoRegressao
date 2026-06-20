@@ -1,5 +1,0 @@
-"coeficiente","estimativa","erro_padrao","t_stat","p_value","significativo"
-"intercepto",1.7252,1.2263,1.4069,0.16619,"Não"
-"retorno_ibov",1.1257,0.2998,3.7549,0.000486,"Sim (*)"
-"retorno_brent",0.2781,0.1006,2.7635,0.008197,"Sim (*)"
-"retorno_dolar",1.0838,0.4937,2.1955,0.033214,"Sim (*)"

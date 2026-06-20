@@ -1,3 +1,0 @@
-"teste","estatistica","p_value","pressuposto_ok"
-"Shapiro-Wilk (normalidade)",0.9821,0.6415,TRUE
-"Breusch-Pagan (homocedasticidade)",4.0583,0.2552,TRUE

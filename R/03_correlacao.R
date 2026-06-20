@@ -5,10 +5,10 @@
 # Implementa Pearson de 3 formas, inferência, IC de Fisher e Spearman.
 # =============================================================================
 
-library(tidyverse)
+#library(tidyverse)
 library(ggplot2)
-library(nortest)   # ad.test
-library(psych)     # describe
+#(nortest)   # ad.test
+#library(psych)     # describe
 
 # ---------------------------------------------------------------------------
 # Caminhos  (usar com o projeto .Rproj aberto no RStudio)
